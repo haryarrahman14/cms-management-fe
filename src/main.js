@@ -9,6 +9,9 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import '@mdi/font/css/materialdesignicons.css'
 import 'quill/dist/quill.snow.css'
 import Config from './config/Config'
+import LoadConfigService from '@/usecases/LoadConfigService'
+
+LoadConfigService.get().then((config) => console.log('config network', Config))
 
 console.log('Config', Config)
 

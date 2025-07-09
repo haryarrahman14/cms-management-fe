@@ -2,6 +2,8 @@ import LoadConfigService from '@/usecases/LoadConfigService'
 
 const LoadConfig = LoadConfigService.loadConfig()
 
+console.log('loadConfig', LoadConfig)
+
 const Config = {
   keycloak: {
     host: LoadConfig.keycloakHost,

@@ -6,12 +6,11 @@ import { keycloak } from './auth/keycloak.js'
 import VueApexCharts from 'vue3-apexcharts'
 import vuetify from './plugins/vuetify'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-import Config from './config/Config'
-
 import '@mdi/font/css/materialdesignicons.css'
 import 'quill/dist/quill.snow.css'
+import Config from './config/Config'
 
-console.log('test env', Config.app.testEnv)
+console.log('Config', Config)
 
 keycloak
   .init({ onLoad: 'login-required' })

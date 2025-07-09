@@ -15,8 +15,9 @@ FROM nginx:stable-alpine AS production-stage
 
 COPY --from=build-stage /app/dist/ /usr/share/nginx/html
 COPY default.conf  /etc/nginx/conf.d/default.conf
+COPY env_init.sh /docker-entrypoint.d/90-env-init.sh
 
-
+RUN chmod 777 /usr/share/nginx/html/config.json
 RUN chmod 777 -R /var/cache/nginx 
 RUN chmod -R 777 /var/run 
 

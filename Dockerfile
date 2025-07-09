@@ -1,36 +1,26 @@
-FROM btpns/node:22.16-alpine
-
-# user
-USER root
-
-# Set working directory inside the container
+FROM btpns/node:22.16-alpine AS build-stage
+ADD . /app
 WORKDIR /app
-
-# Ensure correct permissions for /app
 RUN mkdir -p /app && chmod -R 777 /app
-
-# Ensure correct permissions for /app
 RUN mkdir -p /app/node_modules && chmod -R 777 /app/node_modules
-
-# Set npm cache to a writable directory
+RUN mkdir -p /app/node_modules/.vite-temp && chmod -R 777 /app/node_modules/.vite-temp
 RUN npm config set cache /.npm
-
-# Ensure npm cache directory is writable
 RUN mkdir -p /.npm/_logs && chmod -R 777 /.npm
-
-# Copy package.json and install dependencies first
 COPY package*.json ./
-
-# Install dependencies before copying the rest of the files
-RUN npm install
-
-# Copy the rest of the application code
+RUN npm install --legacy-peer-deps
 COPY . .
+RUN npm run build
 
-RUN ls -al
+FROM nginx:stable-alpine AS production-stage
 
-# Expose the port your app runs on
+COPY --from=build-stage /app/dist/ /usr/share/nginx/html
+COPY default.conf  /etc/nginx/conf.d/default.conf
+
+
+RUN chmod 777 -R /var/cache/nginx 
+RUN chmod -R 777 /var/run 
+
+ 
 EXPOSE 5173
 
-# Run the app
 CMD ["npm", "run", "dev"]

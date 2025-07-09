@@ -1,5 +1,6 @@
 import LoadConfigService from '@/usecases/LoadConfigService'
 
+LoadConfigService.get()
 const LoadConfig = LoadConfigService.loadConfig()
 
 console.log('loadConfig', LoadConfig)

@@ -5,12 +5,12 @@ import LoadConfigLocalRepository from '@/repositories/local/LoadConfigLocalRepos
  *
  * @returns {Promise<ResponseStruct|*>}
  */
-const get = async () => {
-  let result = await loadConfig()
+const get = () => {
+  let result = loadConfig()
   if (typeof result === 'undefined') {
-    result = await LoadConfigNetworkRepository.get()
+    result = LoadConfigNetworkRepository.get()
     if (typeof result.data !== 'undefined') {
-      await LoadConfigLocalRepository.store(result.data)
+      LoadConfigLocalRepository.store(result.data)
       return result.data
     }
   }

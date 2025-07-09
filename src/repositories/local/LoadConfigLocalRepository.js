@@ -2,7 +2,7 @@ import Store from 'store'
 
 const localTable = 'config'
 
-const store = async (config) => {
+const store = (config) => {
   Store.set(localTable, config)
 }
 

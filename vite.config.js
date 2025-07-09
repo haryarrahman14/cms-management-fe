@@ -11,6 +11,13 @@ export default defineConfig({
     vueDevTools(),
   ],
   base: './',
+  server:{
+    port: 5173,
+    allowedHosts: true,
+    host: '0.0.0.0',
+    cors: true,
+    strictPort: true,
+  },
   preview:{
     port: 5173,
     allowedHosts: true,

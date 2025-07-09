@@ -28,7 +28,7 @@ objects:
             image: "${OCP_INTERNAL_URL}/${GROUP_NAME}-${STAGE}/${APP_NAME}:${OCP_BUILD_TAG}"
             ports:
               - name: app
-                containerPort: 8080
+                containerPort: 5173
                 protocol: TCP
             resources:
               limits:

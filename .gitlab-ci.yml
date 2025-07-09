@@ -1,0 +1,36 @@
+variables:
+  GROUP_NAME: 'cms'
+  APP_NAME: 'cms-management-fe'
+  VERSION: $CI_COMMIT_SHORT_SHA
+
+image: 'docker:latest'
+
+stages:
+  - building
+  - unit-testing
+  - packaging
+  - source-scanning
+  - image-building
+  - image-scanning
+  - dirty-deploy
+  - dirty-manage
+  - dirty-testing
+  - alpha-promotion
+  - alpha-deploy
+  - alpha-manage
+  - alpha-testing
+  - beta-promotion
+  - beta-deploy
+  - beta-manage
+  - regresion-testing
+  - nonfunc-testing
+  - promote-production
+  - release-production
+  - prod-deploy
+  - prod-manage
+  - Mr-To-Master
+
+include:
+  - project: 'base/templates'
+    ref: main
+    file: '/Fix-Template/NodeV22-Prospera-Rosa.yml'

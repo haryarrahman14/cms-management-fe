@@ -1,10 +1,11 @@
 import Keycloak from 'keycloak-js'
+import Config from '@/config/Config'
 
 const keycloak = new Keycloak({
-  url: 'https://accounts-nww.twprisma.com/auth',
-  realm: 'dirty',
-  clientId: 'cms-management-fe',
-  redirectUri: 'https://cms-management-fe-cms-dirty.apps.btpnsdev1.c3vu.p1.openshiftapps.com/auth/callback',
+  url: Config.keycloak.host,
+  realm: Config.keycloak.realm,
+  clientId: Config.keycloak.clientId,
+  redirectUri: Config.keycloak.redirectUri,
 })
 
 const initializeKeycloak = () =>

@@ -1,17 +1,7 @@
 {
-  "dateLongFormat": "DD/MM/YYYY",
-  "firebaseApiKey": "AIzaSyDl3mMUdnoXNIuwmOsQydOqKRgZyLHtO5g",
-  "firebaseAppId": "1:436944935620:web:989257a37695f8661f8791",
-  "firebaseAuthDomain": "btpns-dev-prospera-revamp.firebaseapp.com",
-  "firebaseMeasurementId": "G-2NL8F9R4YX",
-  "firebaseMessagingSenderId": "436944935620",
-  "firebaseProjectId": "btpns-dev-prospera-revamp",
-  "firebaseStorageBucket": "btpns-dev-prospera-revamp.appspot.com",
-  "firebaseVapidKey": "BG5wnZOwVL7ZbDgnaQ_dKd_0Anpru3BRWccfmVXA0PCMWyj8_OqcyhKb-NI7YcdR-5J_gqAqDrtFDZz09NtMrEc",
-  "keycloakClientID": "prospera2-modernization",
-  "keycloakHost": "https://accounts-nww.syariahbtpn.com/auth",
+  "keyCloakHost": "https://accounts-nww.twprisma.com/auth",
   "keycloakRealm": "dirty",
-  "keycloakRedirectUri": "https://prospera-modernization-btpns-prospera2-dirty.apps.btpnsdev1.c3vu.p1.openshiftapps.com/auth/callback",
-  "messageTopic": "prospera-web-push-notification-alpha",
-  "money": ""
+  "keycloakRedirectUri": "https://cms-management-fe-cms-dirty.apps.btpnsdev1.c3vu.p1.openshiftapps.com/auth/callback",
+  "keycloakClientID": "cms-management-fe",
+  "cmsBackendApi": "https://cms-management-be-cms-dirty.apps.btpnsdev1.c3vu.p1.openshiftapps.com"
 }

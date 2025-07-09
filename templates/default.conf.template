@@ -7,7 +7,7 @@ error_log                  stderr ${ERROR_LOG_LEVEL};
 resolver                   dns-default.openshift-dns.svc.cluster.local valid=10s;
 
 server {
-    listen                 5173 reuseport default_server backlog=100;
+    listen                 ${PORT} reuseport default_server backlog=100;
     server_name            _;
 
     # gzip

@@ -30,7 +30,7 @@ COPY . .
 RUN ls -al
 
 # Expose the port your app runs on
-EXPOSE 8080
+EXPOSE 5173
 
 # Run the app
 CMD ["npm", "run", "dev"]

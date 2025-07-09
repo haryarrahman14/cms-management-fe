@@ -1,6 +1,8 @@
 import LoadConfigService from '@/usecases/LoadConfigService'
 
-let LoadConfig = LoadConfigService.loadConfig()
+const LoadConfig = LoadConfigService.loadConfig()
+
+console.log('loadConfig', LoadConfig)
 
 const Config = {
   app: {

@@ -23,4 +23,4 @@ RUN chmod -R 777 /var/run
  
 EXPOSE 5173
 
-CMD ["npm", "run", "dev"]
+CMD ["nginx", "-g", "daemon off;"]

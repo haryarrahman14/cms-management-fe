@@ -1,15 +1,16 @@
 import Keycloak from 'keycloak-js'
 
 const keycloak = new Keycloak({
-  url: 'http://localhost:8080/', // sesuaikan URL Keycloak Anda
-  realm: 'cmsrealm',
-  clientId: 'cms-client',
+  url: 'https://accounts-nww.twprisma.com/auth',
+  realm: 'dirty',
+  clientId: 'cms-management-fe',
+  redirectUri: 'https://cms-management-fe-cms-dirty.apps.btpnsdev1.c3vu.p1.openshiftapps.com/auth/callback',
 })
 
 const initializeKeycloak = () =>
   new Promise((resolve, reject) => {
     keycloak
-      .init({ onLoad: 'login-required' }) // otomatis redirect ke login
+      .init({ onLoad: 'login-required' })
       .then((authenticated) => {
         if (authenticated) {
           resolve(keycloak)

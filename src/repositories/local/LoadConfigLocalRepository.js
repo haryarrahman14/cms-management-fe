@@ -1,21 +1,18 @@
-import { defineStore } from 'pinia'
+import Store from 'store'
 
-export const LoadConfigLocalRepository = defineStore('config', {
-  state: () => ({
-    formData: null,
-  }),
-  actions: {
-    async store(data) {
-      this.formData = data
-    },
-    async get() {
-      return this.formData
-    },
-    async remove() {
-      this.formData = null
-    },
-  },
-  persist: true,
-})
+const localTable = 'config'
+
+const store = async (config) => {
+  Store.set(localTable, config)
+}
+
+const get = () => {
+  return Store.get(localTable)
+}
+
+const LoadConfigLocalRepository = {
+  store,
+  get,
+}
 
 export default LoadConfigLocalRepository

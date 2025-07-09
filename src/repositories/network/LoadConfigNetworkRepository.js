@@ -1,16 +1,16 @@
-// import axios from 'axios'
+import axios from 'axios'
 
-// /**
-//  * Get config app
-//  * Don't use Http plugins to avoid undefined config at the first app mounted
-//  * @returns {Promise<AxiosResponse<any>>}
-//  */
-// const get = async () => {
-//   return axios.get(`${location.origin}/config.json`)
-// }
+/**
+ * Get config app
+ * Don't use Http plugins to avoid undefined config at the first app mounted
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+const get = async () => {
+  return axios.get(`${location.origin}/config.json`)
+}
 
-// const LoadConfigNetworkRepository = {
-//   get,
-// }
+const LoadConfigNetworkRepository = {
+  get,
+}
 
-// export default LoadConfigNetworkRepository
+export default LoadConfigNetworkRepository

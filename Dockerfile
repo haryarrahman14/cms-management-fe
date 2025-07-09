@@ -30,5 +30,8 @@ RUN chown -R nginx.nginx /etc/nginx && \
 	ls -lh /var/log/nginx
  
 EXPOSE 5173
+USER nginx
 
-CMD ["nginx", "-g", "daemon off;"]
+# EXPOSE 5173
+
+# CMD ["nginx", "-g", "daemon off;"]

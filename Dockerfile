@@ -21,12 +21,7 @@ RUN chmod 777 /usr/share/nginx/html/config.json
 RUN chmod 777 -R /var/cache/nginx 
 RUN chmod -R 777 /var/run 
 
-RUN chown -R nginx.nginx /etc/nginx && \
-    chown -R nginx.nginx /var/log/nginx && \
-	chmod -R 777 /var/log/nginx && \
-	chmod -R 777 /etc/nginx/conf.d && \
-	chown -R nginx.nginx /docker-entrypoint.d/90-env-init.sh && \
-	chmod +x /docker-entrypoint.d/90-env-init.sh && \
+RUN chmod +x /docker-entrypoint.d/90-env-init.sh && \
 	ls -lh /var/log/nginx
  
 EXPOSE 5173

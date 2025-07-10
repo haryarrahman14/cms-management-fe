@@ -1,0 +1,58 @@
+---
+
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: ${APP_NAME}-dc
+labels:
+  template: ${APP_NAME}-dc
+  app: ${APP_NAME}
+objects:
+- kind: DeploymentConfig
+  apiVersion: apps.openshift.io/v1
+  metadata:
+    name: ${APP_NAME}
+    namespace: ${GROUP_NAME}-${STAGE}
+  spec:
+    selector:
+      app: ${APP_NAME}
+    replicas: ${{REPLICAS_PODS}}
+    template:
+      metadata:
+        labels:
+          app: ${APP_NAME}
+      spec:
+        containers:
+          - name: ${APP_NAME}
+            selector: worker=true
+            image: "${OCP_INTERNAL_URL}/${GROUP_NAME}-${STAGE}/${APP_NAME}:${OCP_BUILD_TAG}"
+            ports:
+              - name: app
+                containerPort: 5173
+                protocol: TCP
+            resources:
+              limits:
+                cpu: ${{LIMIT_CPU}}
+                memory: ${{LIMIT_MEMORY}}
+              requests:
+                cpu: 100m
+                memory: 64M
+            envFrom:
+              - configMapRef:
+                  name: ${APP_NAME}-env
+              - secretRef:
+                  name: ${APP_NAME}-secrets
+parameters:
+  - name: APP_NAME
+  - name: REPLICAS_PODS
+  - name: LIMIT_CPU
+  - name: LIMIT_MEMORY
+  - name: CI_COMMIT_SHORT_SHA
+    value: latest
+  - name: STAGE
+  - name: GROUP_NAME
+  - name: OCP_REGISTRY_URL
+  - name: OCP_BUILD_TAG
+    value: latest
+  - name: OCP_INTERNAL_URL
+    value: image-registry.openshift-image-registry.svc:5000

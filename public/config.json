@@ -1,0 +1,7 @@
+{
+  "keycloakHost": "https://accounts-nww.twprisma.com/auth",
+  "keycloakRealm": "dirty",
+  "keycloakRedirectUri": "https://cms-management-fe-cms-dirty.apps.btpnsdev1.c3vu.p1.openshiftapps.com/auth/callback",
+  "keycloakClientID": "cms-management-fe",
+  "cmsBackendApi": "https://cms-management-be-cms-dirty.apps.btpnsdev1.c3vu.p1.openshiftapps.com"
+}

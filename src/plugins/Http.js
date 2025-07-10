@@ -4,6 +4,8 @@ import MapResponse from './MapResponse'
 
 axios.defaults.headers.common['Authorization'] = `Bearer ${window?.keycloak?.idToken}`
 
+const TIMEOUT = 300000
+
 const get = async (url, payload, customConfig = {}) => {
   const queryParams = queryString.stringify(payload || {})
   const urlWithQueries = queryParams ? `${url}?${query}` : url
@@ -16,7 +18,7 @@ const get = async (url, payload, customConfig = {}) => {
 }
 
 const post = async (url, payload, customConfig = {}) => {
-  const config = { timeout: 300000, ...customConfig }
+  const config = { timeout: TIMEOUT, ...customConfig }
   try {
     const response = await axios.post(url, payload, config)
     return MapResponse.mapResponse(response.data)
@@ -26,7 +28,7 @@ const post = async (url, payload, customConfig = {}) => {
 }
 
 const put = async (url, payload, customConfig = {}) => {
-  const config = { timeout: 300000, ...customConfig }
+  const config = { timeout: TIMEOUT, ...customConfig }
   try {
     const response = await axios.put(url, payload, config)
     return MapResponse.mapResponse(response.data)

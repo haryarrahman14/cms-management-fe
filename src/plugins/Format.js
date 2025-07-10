@@ -18,6 +18,11 @@ const money = (value) => {
   }
 }
 
+const dateLong = (date) => {
+  if (!date) return ''
+  return dayjs(date).format('DD/MM/YYYY HH:mm:ss')
+}
+
 // const number = (value) => {
 //   let num = Intl.NumberFormat(Config.app.money, {
 //     maximumSignificantDigits: 21,
@@ -63,7 +68,7 @@ const dateDefault = (date) => {
 const Format = {
   money,
   // number,
-  // dateLong,
+  dateLong,
   // dateLongWithTime,
   percentage,
   reportNameDateFormat,

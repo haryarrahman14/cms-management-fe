@@ -8,7 +8,7 @@ const TIMEOUT = 300000
 
 const get = async (url, payload, customConfig = {}) => {
   const queryParams = queryString.stringify(payload || {})
-  const urlWithQueries = queryParams ? `${url}?${query}` : url
+  const urlWithQueries = queryParams ? `${url}?${queryParams}` : url
   try {
     const response = await axios.get(urlWithQueries, customConfig)
     return MapResponse.mapResponse(response.data)

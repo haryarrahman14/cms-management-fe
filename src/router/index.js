@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import TemplateDetail from '@/views/pages/content/ContentTemplateDetail.vue'
 import ConsentView from '../views/ConsentView.vue'
 import AdminRoles from '@/views/pages/admin/AdminRoles.vue'
+import AdminRolesCreate from '@/views/pages/admin/AdminRolesCreate.vue'
 import AdminUsers from '@/views/pages/admin/AdminUsers.vue'
 import AdminAgents from '@/views/pages/admin/AdminAgents.vue'
 import AdminUsersCreate from '@/views/pages/admin/AdminUsersCreate.vue'
@@ -25,9 +26,19 @@ const routes = [
     component: TemplateDetail,
   },
   {
-    path: '/admin',
+    path: '/admin/roles',
     name: 'AdminRoles',
     component: AdminRoles,
+  },
+  {
+    path: '/admin/roles/create',
+    name: 'AdminRolesCreate',
+    component: AdminRolesCreate,
+  },
+  {
+    path: '/admin/roles/edit/:id',
+    name: 'AdminRolesEdit',
+    component: AdminRolesCreate,
   },
   {
     path: '/admin/users',

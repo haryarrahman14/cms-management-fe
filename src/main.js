@@ -18,7 +18,6 @@ loadConfig().then((config) => {
     redirectUri: config.keycloak.redirectUri,
   })
   keycloak.init({ onLoad: 'login-required' }).then((authenticated) => {
-    app.provide('keycloak', keycloak)
     if (!authenticated) {
       console.warn('not authenticated')
       window.location.reload()
@@ -46,6 +45,7 @@ loadConfig().then((config) => {
   app.use(pinia)
   app.use(router)
   app.use(vuetify)
+  app.provide('keycloak', keycloak)
   app.use(VueApexCharts)
   app.mount('#app')
 })

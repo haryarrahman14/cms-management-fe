@@ -5,17 +5,29 @@
     <v-main>
       <RouterView />
     </v-main>
+
+    <v-snackbar
+      v-model="snackbarStore.show"
+      :timeout="snackbarStore.timeout"
+      :color="snackbarStore.color"
+    >
+      {{ snackbarStore.text }}
+      <template #actions>
+        <v-btn variant="text" @click="snackbarStore.close()"> Close </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
 <script setup>
 import { RouterView } from 'vue-router'
-// import HelloWorld from './components/HelloWorld.vue'
 import { inject } from 'vue'
+import { useSnackbarStore } from '@/stores/useSnackbarStore'
 import AppSideNav from './components/AppSideNav.vue'
-// import AppTopNav from './components/AppTopNav.vue'
 
 const keycloak = inject('keycloak')
+
+const snackbarStore = useSnackbarStore()
 
 function logout() {
   keycloak.logout({

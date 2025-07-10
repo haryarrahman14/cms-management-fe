@@ -7,7 +7,6 @@ import LoadConfigLocalRepository from '@/repositories/local/LoadConfigLocalRepos
  */
 const get = async () => {
   let result = loadConfig()
-  console.log('result before', result)
   if (typeof result === 'undefined') {
     result = await LoadConfigNetworkRepository.get()
     if (typeof result.data !== 'undefined') {
@@ -15,7 +14,6 @@ const get = async () => {
       return result.data
     }
   }
-  console.log('result', result)
   return result
 }
 const loadConfig = () => {

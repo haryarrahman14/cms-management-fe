@@ -1,18 +1,23 @@
 import LoadConfigService from '@/usecases/LoadConfigService'
 
-const getConfig = async () => {
-  const config = await LoadConfigService.get()
-  return {
+export let config = {}
+
+/**
+ * To be called once and once only on main.js
+ * @returns
+ */
+export const loadConfig = async () => {
+  const configResp = await LoadConfigService.get()
+  config = {
     keycloak: {
-      host: config.keycloakHost,
-      realm: config.keycloakRealm,
-      clientId: config.keycloakClientID,
-      redirectUri: config.keycloakRedirectUri,
+      host: configResp.keycloakHost,
+      realm: configResp.keycloakRealm,
+      clientId: configResp.keycloakClientID,
+      redirectUri: configResp.keycloakRedirectUri,
     },
     api: {
-      cmsBackend: config.cmsBackendApi,
+      cmsBackend: configResp.cmsBackendApi,
     },
   }
+  return config
 }
-
-export default getConfig

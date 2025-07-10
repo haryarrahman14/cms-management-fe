@@ -14,6 +14,7 @@ const get = () => {
       return result.data
     }
   }
+  console.log('result', result)
   return result
 }
 const loadConfig = () => {

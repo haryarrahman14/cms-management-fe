@@ -1,11 +1,13 @@
 import Keycloak from 'keycloak-js'
-import Config from '@/config/Config'
+import getConfig from '@/config/Config'
+
+const config = await getConfig()
 
 const keycloak = new Keycloak({
-  url: Config.keycloak.host,
-  realm: Config.keycloak.realm,
-  clientId: Config.keycloak.clientId,
-  redirectUri: Config.keycloak.redirectUri,
+  url: config.keycloak.host,
+  realm: config.keycloak.realm,
+  clientId: config.keycloak.clientId,
+  redirectUri: config.keycloak.redirectUri,
 })
 
 const initializeKeycloak = () =>

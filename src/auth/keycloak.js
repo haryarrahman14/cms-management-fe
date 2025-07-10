@@ -1,17 +1,16 @@
 import Keycloak from 'keycloak-js'
 import getConfig from '@/config/Config'
 
-const config = await getConfig()
-
-const keycloak = new Keycloak({
-  url: config.keycloak.host,
-  realm: config.keycloak.realm,
-  clientId: config.keycloak.clientId,
-  redirectUri: config.keycloak.redirectUri,
-})
-
-const initializeKeycloak = () =>
-  new Promise((resolve, reject) => {
+const initializeKeycloak = async () => {
+  const config = await getConfig()
+  console.log('config', config)
+  const keycloak = new Keycloak({
+    url: config.keycloak.host,
+    realm: config.keycloak.realm,
+    clientId: config.keycloak.clientId,
+    redirectUri: config.keycloak.redirectUri,
+  })
+  return new Promise((resolve, reject) => {
     keycloak
       .init({ onLoad: 'login-required' })
       .then((authenticated) => {
@@ -23,5 +22,6 @@ const initializeKeycloak = () =>
       })
       .catch(reject)
   })
+}
 
-export { keycloak, initializeKeycloak }
+export { initializeKeycloak }

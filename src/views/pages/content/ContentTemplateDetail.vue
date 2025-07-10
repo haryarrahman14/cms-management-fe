@@ -16,14 +16,17 @@
       <v-card-text>
         <v-row dense>
           <v-col cols="12">
-            <BaseInput v-model="form.name" label="Judul Template" />
+            <BaseInput v-model="form.title" label="Judul Template" />
           </v-col>
           <v-col cols="12">
             <BaseInput v-model="form.description" label="Deskripsi" />
           </v-col>
+          <v-col cols="12">
+            <BaseInput v-model="form.version" label="Version" type="number" step="0.1" />
+          </v-col>
 
           <v-col cols="12">
-            <div class="d-flex justify-space-between align-center mb-2">
+            <div class="d-flex justify-space-between align-center mb-8">
               <h2 class="text-h6 font-weight-bold">Klausa</h2>
               <BaseButton @click="addClause">+ Tambah Klausa</BaseButton>
             </div>
@@ -45,18 +48,13 @@
                   <BaseButton icon color="error" @click="removeClause(index)"> &times; </BaseButton>
                 </div>
               </v-card-title>
-
               <v-card-text>
-                <v-col cols="12">
-                  <BaseInput v-model="clause.title" label="Judul Klausa" />
-                </v-col>
-                <BaseRichEditor v-model="clause.content" :key="clause.id" label="Isi Klausa" />
+                <BaseToggle v-model="clause.required" label="Wajib Diisi" />
+                <BaseInput v-model="clause.header" label="Judul Klausa" />
+                <BaseInput v-model="clause.shortName" label="Short Name" />
+                <BaseRichEditor v-model="clause.description" :key="clause.id" label="Isi Klausa" />
               </v-card-text>
             </v-card>
-          </v-col>
-
-          <v-col cols="12">
-            <BaseToggle v-model="form.status" label="Status Template" />
           </v-col>
         </v-row>
 
@@ -80,23 +78,25 @@ import BaseToggle from '@/components/BaseToggle.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseBreadCrumb from '@/components/BaseBreadcrumb.vue'
 import BaseRichEditor from '@/components/BaseRichEditor.vue'
+import {
+  CreateTemplateRequest,
+  CreateTemplateClause,
+} from '@/structs/networks/request/CreateTemplateRequest'
+import TemplatesService from '@/usecases/TemplatesService'
+import { useSnackbarStore } from '@/stores/useSnackbarStore'
 
 const router = useRouter()
+const snackbar = useSnackbarStore()
 
 const generateUUID = () => Math.random().toString(36).substring(2, 9) + Date.now().toString(36)
 
-const form = ref({
-  name: '',
-  description: '',
-  status: false,
-  clauses: [],
-})
+const isLoading = ref(false)
+const form = ref(new CreateTemplateRequest())
 
 const addClause = () => {
   form.value.clauses.push({
     id: generateUUID(),
-    title: '',
-    content: '',
+    ...new CreateTemplateClause(),
   })
 }
 
@@ -120,10 +120,17 @@ const moveDown = (index) => {
   }
 }
 
-const submitForm = () => {
-  router.push({
-    name: 'about',
-  })
+const submitForm = async () => {
+  isLoading.value = true
+  const response = await TemplatesService.createTemplate(form.value)
+  isLoading.value = false
+  if (response.code === 200) {
+    snackbar.open('Template berhasil dibuat')
+    form.value = new CreateTemplateRequest()
+    router.push({ name: 'consent' })
+  } else {
+    snackbar.open(`Error: ${response.message}`, { color: 'error' })
+  }
 }
 
 const cancelForm = () => {

@@ -1,5 +1,7 @@
+import { inject } from 'vue'
 import { defineStore } from 'pinia'
-import { keycloak } from '../auth/keycloak'
+
+const keycloak = inject('keycloak')
 
 export const useUserStore = defineStore('user', {
   state: () => ({

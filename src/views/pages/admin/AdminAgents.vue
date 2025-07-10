@@ -3,12 +3,12 @@
     <BaseBreadCrumb
       :items="[
         { text: 'Home', to: '/', active: true },
-        { text: 'User', active: false },
+        { text: 'Agents', active: false },
       ]"
     />
     <v-row class="mb-4">
       <v-col cols="12" class="d-flex justify-start">
-        <BaseButton @click="submitForm">Buat User</BaseButton>
+        <BaseButton @click="submitForm">Buat Agent</BaseButton>
       </v-col>
     </v-row>
     <v-row>
@@ -29,6 +29,7 @@ import BaseBreadCrumb from '@/components/BaseBreadcrumb.vue'
 import UsersService from '@/usecases/UsersService'
 
 const router = useRouter()
+const users = ref([])
 
 const tableHeaders = [
   { text: 'No', value: 'no' },
@@ -39,18 +40,6 @@ const tableHeaders = [
 ]
 
 const showPopup = ref(false)
-const users = ref([])
-
-onMounted(() => {
-  getUsers()
-})
-
-const getUsers = async () => {
-  const response = await UsersService.getUsers('USER')
-  if (response.code === 200) {
-    users.value = response.data
-  }
-}
 
 const form = ref({
   name: '',
@@ -58,10 +47,21 @@ const form = ref({
   isRequired: false,
 })
 
+onMounted(() => {
+  getUsers()
+})
+
+const getUsers = async () => {
+  const response = await UsersService.getUsers('AGENT')
+  if (response.code === 200) {
+    users.value = response.data
+  }
+}
+
 const submitForm = () => {
   showPopup.value = false
   router.push({
-    name: 'AdminUsersCreate',
+    name: 'AdminAgentsCreate',
   })
 }
 </script>

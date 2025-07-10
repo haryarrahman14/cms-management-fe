@@ -1,26 +1,34 @@
 <template>
-  <v-navigation-drawer app permanent color="primary" dark>
-    <v-list dense nav>
-      <v-list-item class="text-h6 text-white font-weight-bold">
-        <v-list-item-content>
-          <v-list-item-title>CONSENT MANAGEMENT SYSTEM</v-list-item-title>
+  <v-navigation-drawer app permanent color="primary" dark :rail="rail" @click="rail = false">
+    <v-list>
+      <v-list-item>
+        <v-list-item-content v-if="!rail">
+          <v-list-item-title>CMS</v-list-item-title>
         </v-list-item-content>
+        <template v-slot:append>
+          <v-btn icon="mdi-chevron-left" variant="text" @click.stop="rail = !rail"></v-btn>
+        </template>
       </v-list-item>
-
+    </v-list>
+    <v-list dense nav>
       <v-divider class="my-2" />
 
-      <v-list-item to="/" router exact>
-        <v-list-item-icon><v-icon>mdi-home</v-icon></v-list-item-icon>
-        <v-list-item-content><v-list-item-title>Beranda</v-list-item-title></v-list-item-content>
-      </v-list-item>
+      <v-list-item
+        to="/"
+        router
+        prepend-icon="mdi-home"
+        title="Beranda"
+        value="beranda"
+      ></v-list-item>
 
       <v-list-group v-model="contentGroupOpen" no-action>
         <template #activator="{ props }">
-          <v-list-item v-bind="props">
-            <v-list-item-icon><v-icon>mdi-file-document-plus</v-icon></v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>Content</v-list-item-title>
-            </v-list-item-content>
+          <v-list-item
+            v-bind="props"
+            prepend-icon="mdi-file-document-plus"
+            title="Content"
+            value="content"
+          >
           </v-list-item>
         </template>
         <v-list-item to="/consent" router>
@@ -31,9 +39,7 @@
 
       <v-list-group v-model="adminGroupOpen" no-action>
         <template #activator="{ props }">
-          <v-list-item v-bind="props">
-            <v-list-item-icon><v-icon>mdi-account-edit</v-icon></v-list-item-icon>
-            <v-list-item-content><v-list-item-title>Admin</v-list-item-title></v-list-item-content>
+          <v-list-item v-bind="props" prepend-icon="mdi-account-edit" title="Admin" value="admin">
           </v-list-item>
         </template>
         <v-list-item to="/admin" router>
@@ -42,16 +48,16 @@
         <v-list-item to="/admin/users" router>
           <v-list-item-content><v-list-item-title>User</v-list-item-title></v-list-item-content>
         </v-list-item>
+        <v-list-item to="/admin/agents" router>
+          <v-list-item-content><v-list-item-title>Agent</v-list-item-title></v-list-item-content>
+        </v-list-item>
       </v-list-group>
-
-      <v-spacer />
-
-      <v-list-item @click="logout">
-        <v-list-item-icon><v-icon color="red">mdi-logout</v-icon></v-list-item-icon>
-        <v-list-item-content
-          ><v-list-item-title class="text-red">Logout</v-list-item-title></v-list-item-content
-        >
-      </v-list-item>
+      <v-list-item
+        @click="logout"
+        prepend-icon="mdi-logout"
+        title="Logout"
+        value="logout"
+      ></v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -63,6 +69,7 @@ const keycloak = inject('keycloak')
 
 const contentGroupOpen = ref(false)
 const adminGroupOpen = ref(false)
+const rail = ref(true)
 
 function logout() {
   keycloak.logout({

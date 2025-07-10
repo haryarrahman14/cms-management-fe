@@ -13,75 +13,59 @@
       </v-col>
     </v-row>
 
-    <!-- <BasePopup v-model:show="showPopup" title="Buat Template">
-      <v-row dense>
-        <v-col cols="12">
-          <BaseInput v-model="form.name" label="Judul Template" />
-        </v-col>
-        <v-col cols="12">
-          <BaseInput v-model="form.version" label="Version" />
-        </v-col>
-        <v-col cols="12">
-          <BaseToggle v-model="form.status" label="Status Template" />
-        </v-col>
-      </v-row>
-      <v-row class="mb-4">
-        <v-col cols="12" class="d-flex justify-end">
-          <BaseButton @click="submitForm">Submit</BaseButton>
-          <BaseButton class="ml-2" color="primary" @click="submitForm">Cancel</BaseButton>
-        </v-col>
-      </v-row>
-    </BasePopup> -->
+    <v-row class="mb-4">
+      <v-col cols="4">
+        <BaseInput v-model="searchForm.templateName" label="Cari Template" />
+      </v-col>
+      <v-col cols="4" class="d-flex">
+        <BaseButton @click="searchTemplate">Cari</BaseButton>
+      </v-col>
+    </v-row>
 
     <v-row>
       <v-col cols="12">
-        <BaseTable :headers="tableHeaders" :items="tableItems" />
+        <BaseTable :headers="tableHeaders" :items="templateItems" />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import BaseToggle from '@/components/BaseToggle.vue'
+import BaseInput from '@/components/BaseInput.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseTable from '@/components/BaseTable.vue'
 import BaseBreadCrumb from '@/components/BaseBreadcrumb.vue'
+import TemplatesService from '@/usecases/TemplatesService'
+import { GetTemplateRequest } from '@/structs/networks/request/GetTemplateRequest'
+import Format from '@/plugins/Format'
 
 const router = useRouter()
 
+const searchForm = ref(new GetTemplateRequest())
+
+onMounted(() => {
+  searchTemplate()
+})
+
+watch(
+  () => searchForm.value.templateName,
+  (val) => {
+    searchForm.value.isGetAll = !val
+  },
+)
+
 const tableHeaders = [
   { text: 'No', value: 'no' },
-  { text: 'Judul', value: 'title' },
-  { text: 'Dibuat oleh', value: 'dibuatOleh' },
-  { text: 'Tanggal Dibuat', value: 'tanggal' },
-  { text: 'Total Klausa', value: 'totalData' },
+  { text: 'Nama Template', value: 'title' },
   { text: 'Version', value: 'version' },
-  { text: 'Status', value: 'status' },
+  { text: 'Tanggal Dibuat', value: 'createdDate' },
+  { text: 'Dibuat oleh', value: 'createdBy' },
 ]
 
-const tableItems = [
-  {
-    no: 1,
-    title: 'Template WO',
-    dibuatOleh: 'RISKA KRISTIANA',
-    tanggal: '21/04/2025 16:54:43',
-    totalData: 4,
-    version: '1.3.0',
-    status: 1,
-  },
-  {
-    no: 2,
-    title: 'Template Create Appid',
-    dibuatOleh: 'STEFANI MEGA',
-    tanggal: '17/04/2025 12:06:31',
-    totalData: 3,
-    version: '1.0.0',
-    status: 1,
-  },
-]
+const templateItems = ref([])
 
 const showPopup = ref(false)
 
@@ -91,20 +75,21 @@ const form = ref({
   isRequired: false,
 })
 
-const options = [
-  { title: 'Option A', value: 'A' },
-  { title: 'Option B', value: 'B' },
-]
-
-const onUpload = () => {
-  showPopup.value = true
-}
-
 const submitForm = () => {
   console.log('Form submitted:', form.value)
   showPopup.value = false
   router.push({
     name: 'TemplateDetail',
   })
+}
+
+const searchTemplate = async () => {
+  const response = await TemplatesService.getTemplates(searchForm.value)
+  if (response.code === 200) {
+    templateItems.value = response.data.map((item) => ({
+      ...item,
+      createdDate: Format.dateLong(item.createdDate || item.createdAt),
+    }))
+  }
 }
 </script>

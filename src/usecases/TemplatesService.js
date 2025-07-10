@@ -9,4 +9,14 @@ const createTemplate = (payload) => {
   return TemplateNetworkRepository.createTemplate({ ...payload, transformedClauses })
 }
 
-export default { createTemplate }
+const getTemplates = async (payload) => {
+  const response = await TemplateNetworkRepository.getTemplates(payload)
+  if (response.code === 200) {
+    response.data = response.data.map((template, index) => {
+      return { ...template, no: index + 1, status: template.status === 1 ? 'Aktif' : 'Tidak Aktif' }
+    })
+  }
+  return response
+}
+
+export default { createTemplate, getTemplates }

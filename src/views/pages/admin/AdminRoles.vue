@@ -2,7 +2,7 @@
   <v-container>
     <BaseBreadCrumb
       :items="[
-        { text: 'ADMIN', to: '/admin', active: true },
+        { text: 'ADMIN', to: '/admin/roles', active: true },
         { text: 'ROLES', active: false },
       ]"
     />
@@ -14,49 +14,51 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <BaseTable :headers="tableHeaders" :items="roleItems" />
+        <BaseTable
+          :headers="tableHeaders"
+          :items="roleItems"
+          :editAction="true"
+          editRoute="AdminRolesEdit"
+        />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-// import BasePopup from '@/components/BasePopup.vue'
-// import BaseInput from '@/components/BaseInput.vue'
-import BaseToggle from '@/components/BaseToggle.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseTable from '@/components/BaseTable.vue'
 import BaseBreadCrumb from '@/components/BaseBreadcrumb.vue'
+import RolesService from '@/usecases/RolesService'
+import Format from '@/plugins/Format'
 
 const router = useRouter()
 
 const tableHeaders = [
-  { text: 'No', value: 'no' },
-  { text: 'Nama', value: 'name' },
+  { text: 'No', value: 'id' },
+  { text: 'Nama', value: 'roleName' },
   { text: 'Dibuat oleh', value: 'createdBy' },
-  { text: 'Tanggal Dibuat', value: 'createdAt' },
-  { text: 'Status', value: 'status' },
+  { text: 'Tanggal Dibuat', value: 'createdDate' },
 ]
 
-const roleItems = [
-  {
-    no: 1,
-    name: 'Admin',
-    createdBy: 'RISKA KRISTIANA',
-    createdAt: '21/04/2025 16:54:43',
-    status: 1,
-  },
-  {
-    no: 2,
-    name: 'Agent',
-    createdBy: 'STEFANI MEGA',
-    createdAt: '17/04/2025 12:06:31',
-    status: 1,
-  },
-]
+const roleItems = ref([])
+
+onMounted(() => {
+  getRoles()
+})
+
+const getRoles = async () => {
+  const response = await RolesService.getRoles()
+  if (response.code === 200) {
+    roleItems.value = response.data.map((item) => ({
+      ...item,
+      createdDate: Format.dateLong(item.createdDate || item.createdAt),
+    }))
+  }
+}
 
 const showPopup = ref(false)
 
@@ -70,7 +72,7 @@ const submitForm = () => {
   console.log('Form submitted:', form.value)
   showPopup.value = false
   router.push({
-    name: 'TemplateDetail',
+    name: 'AdminRolesCreate',
   })
 }
 </script>

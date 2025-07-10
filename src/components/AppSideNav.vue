@@ -42,7 +42,7 @@
           <v-list-item v-bind="props" prepend-icon="mdi-account-edit" title="Admin" value="admin">
           </v-list-item>
         </template>
-        <v-list-item to="/admin" router>
+        <v-list-item to="/admin/roles" router>
           <v-list-item-content><v-list-item-title>Roles</v-list-item-title></v-list-item-content>
         </v-list-item>
         <v-list-item to="/admin/users" router>

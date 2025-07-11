@@ -20,7 +20,13 @@
             <BaseInput v-model="form.name" label="Nama Lengkap" />
           </v-col>
           <v-col cols="12">
-            <BaseInput v-model="form.role" label="Role" />
+            <base-select
+              v-model="form.role"
+              :items="roles"
+              item-title="roleName"
+              item-value="id"
+              label="Role"
+            />
           </v-col>
         </v-row>
         <v-row class="mb-4">
@@ -35,19 +41,31 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseBreadCrumb from '@/components/BaseBreadcrumb.vue'
 import BaseInput from '@/components/BaseInput.vue'
 import BaseButton from '@/components/BaseButton.vue'
+import BaseSelect from '@/components/BaseSelect.vue'
 import { useSnackbarStore } from '@/stores/useSnackbarStore'
 import CreateUserRequest from '@/structs/networks/request/CreateUserRequest'
 import UsersService from '@/usecases/UsersService'
+import RolesService from '@/usecases/RolesService'
 
 const router = useRouter()
 const snackbar = useSnackbarStore()
 const isLoading = ref(false)
 const form = ref(new CreateUserRequest())
+const roles = ref([])
+
+const getRoles = async () => {
+  const response = await RolesService.getRoles()
+  if (response.code === 200) {
+    roles.value = response.data
+  } else {
+    snackbar.open(`Error: ${response.message}`, { color: 'error' })
+  }
+}
 
 const createUser = async () => {
   isLoading.value = true
@@ -66,4 +84,8 @@ const cancelForm = () => {
     name: 'AdminUsers',
   })
 }
+
+onMounted(() => {
+  getRoles()
+})
 </script>

@@ -9,9 +9,9 @@ class CreateUserRequest {
    */
   name = ''
   /**
-   * @type {String}
+   * @type {Number}
    */
-  role = ''
+  role = null
 }
 
 export default CreateUserRequest

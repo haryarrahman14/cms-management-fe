@@ -17,6 +17,7 @@
         <BaseTable
           :headers="tableHeaders"
           :items="roleItems"
+          :loading="isLoading"
           :editAction="true"
           editRoute="AdminRolesEdit"
         />
@@ -26,7 +27,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 import BaseButton from '@/components/BaseButton.vue'
@@ -44,33 +45,17 @@ const tableHeaders = [
   { text: 'Tanggal Dibuat', value: 'createdDate' },
 ]
 
-const roleItems = ref([])
+const { data: roles, isLoading } = RolesService.useGetRoles()
+const roleItems = computed(() => {
+  if (!roles.value) return []
 
-onMounted(() => {
-  getRoles()
-})
-
-const getRoles = async () => {
-  const response = await RolesService.getRoles()
-  if (response.code === 200) {
-    roleItems.value = response.data.map((item) => ({
-      ...item,
-      createdDate: Format.dateLong(item.createdDate || item.createdAt),
-    }))
-  }
-}
-
-const showPopup = ref(false)
-
-const form = ref({
-  name: '',
-  type: '',
-  isRequired: false,
+  return roles.value.map((item) => ({
+    ...item,
+    createdDate: Format.dateLong(item.createdDate || item.createdAt),
+  }))
 })
 
 const submitForm = () => {
-  console.log('Form submitted:', form.value)
-  showPopup.value = false
   router.push({
     name: 'AdminRolesCreate',
   })

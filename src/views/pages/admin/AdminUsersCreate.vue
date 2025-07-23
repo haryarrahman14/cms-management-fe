@@ -24,14 +24,14 @@
               v-model="form.role"
               :items="roles"
               item-title="roleName"
-              item-value="id"
+              item-value="roleId"
               label="Role"
             />
           </v-col>
         </v-row>
         <v-row class="mb-4">
           <v-col cols="12" class="d-flex justify-end">
-            <BaseButton :loading="isLoading" @click="createUser">Submit</BaseButton>
+            <BaseButton :loading="isSubmitting" @click="submitUser">Submit</BaseButton>
             <BaseButton class="ml-2" color="primary" @click="cancelForm">Cancel</BaseButton>
           </v-col>
         </v-row>
@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseBreadCrumb from '@/components/BaseBreadcrumb.vue'
 import BaseInput from '@/components/BaseInput.vue'
@@ -54,29 +54,29 @@ import RolesService from '@/usecases/RolesService'
 
 const router = useRouter()
 const snackbar = useSnackbarStore()
-const isLoading = ref(false)
-const form = ref(new CreateUserRequest())
-const roles = ref([])
+const form = reactive(new CreateUserRequest())
 
-const getRoles = async () => {
-  const response = await RolesService.getRoles()
-  if (response.code === 200) {
-    roles.value = response.data
-  } else {
-    snackbar.open(`Error: ${response.message}`, { color: 'error' })
-  }
-}
-
-const createUser = async () => {
-  isLoading.value = true
-  const response = await UsersService.createUser(form.value)
-  isLoading.value = false
-  if (response.code === 200) {
+const { mutate: createUser, isPending: isCreating } = UsersService.useCreateUser({
+  onSuccess: () => {
     snackbar.open('User berhasil dibuat')
-    form.value = new CreateUserRequest()
-  } else {
-    snackbar.open(`Error: ${response.message}`, { color: 'error' })
-  }
+    Object.assign(form, new CreateUserRequest())
+  },
+  onError: (error) => {
+    snackbar.open(`Error: ${error.message}`, { color: 'error' })
+  },
+})
+const { data: rolesData } = RolesService.useGetRoles()
+const roles = computed(() => {
+  return rolesData.value || []
+})
+
+const isSubmitting = computed(() => isCreating.value)
+
+const submitUser = () => {
+  createUser({
+    ...form,
+    role: roles.value.find((role) => role.id === form.role)?.roleId,
+  })
 }
 
 const cancelForm = () => {
@@ -84,8 +84,4 @@ const cancelForm = () => {
     name: 'AdminUsers',
   })
 }
-
-onMounted(() => {
-  getRoles()
-})
 </script>

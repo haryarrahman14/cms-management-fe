@@ -1,6 +1,6 @@
 class CreateUserRequest {
   /**
-   * Agent Name, unique
+   * Channel Name, unique
    * @type {String}
    */
   username = ''

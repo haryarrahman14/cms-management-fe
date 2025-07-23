@@ -13,16 +13,15 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <BaseTable :headers="tableHeaders" :items="users" />
+        <BaseTable :headers="tableHeaders" :items="users" :loading="isLoading" />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import BaseToggle from '@/components/BaseToggle.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseTable from '@/components/BaseTable.vue'
 import BaseBreadCrumb from '@/components/BaseBreadcrumb.vue'
@@ -38,28 +37,12 @@ const tableHeaders = [
   { text: 'Status', value: 'status' },
 ]
 
-const showPopup = ref(false)
-const users = ref([])
-
-onMounted(() => {
-  getUsers()
-})
-
-const getUsers = async () => {
-  const response = await UsersService.getUsers('USER')
-  if (response.code === 200) {
-    users.value = response.data
-  }
-}
-
-const form = ref({
-  name: '',
-  type: '',
-  isRequired: false,
+const { data: userData, isLoading } = UsersService.useGetUsers('USER')
+const users = computed(() => {
+  return userData.value || []
 })
 
 const submitForm = () => {
-  showPopup.value = false
   router.push({
     name: 'AdminUsersCreate',
   })

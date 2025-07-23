@@ -21,6 +21,14 @@
         value="beranda"
       ></v-list-item>
 
+      <v-list-item
+        to="/consent-records"
+        router
+        prepend-icon="mdi-file-document-multiple"
+        title="Consent Record"
+        value="consent-record"
+      ></v-list-item>
+
       <v-list-group v-model="contentGroupOpen" no-action>
         <template #activator="{ props }">
           <v-list-item
@@ -48,8 +56,8 @@
         <v-list-item to="/admin/users" router>
           <v-list-item-content><v-list-item-title>User</v-list-item-title></v-list-item-content>
         </v-list-item>
-        <v-list-item to="/admin/agents" router>
-          <v-list-item-content><v-list-item-title>Agent</v-list-item-title></v-list-item-content>
+        <v-list-item to="/admin/channel" router>
+          <v-list-item-content><v-list-item-title>Channel</v-list-item-title></v-list-item-content>
         </v-list-item>
       </v-list-group>
       <v-list-item

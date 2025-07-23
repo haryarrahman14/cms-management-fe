@@ -7,17 +7,12 @@
             v-for="(header, index) in headers"
             :id="header.value"
             :key="index"
-            :class="header.class || 'text-white font-weight-bold'"
-            :style="header.style || 'background-color: #004d4d'"
+            :class="header.class || baseHeaderClass"
+            :style="header.style || baseHeaderStyle"
           >
             {{ header.text }}
           </th>
-          <th
-            v-if="hasActions"
-            id="actions"
-            class="text-white font-weight-bold text-center"
-            style="background-color: #004d4d; min-width: 120px"
-          >
+          <th v-if="hasActions" id="actions" :class="actionHeaderClass" :style="actionHeaderStyle">
             Actions
           </th>
         </tr>
@@ -106,6 +101,22 @@ const props = defineProps({
   showDelete: {
     type: Boolean,
     default: false,
+  },
+  baseHeaderClass: {
+    type: String,
+    default: 'text-white font-weight-bold',
+  },
+  baseHeaderStyle: {
+    type: String,
+    default: 'background-color: #004d4d',
+  },
+  actionHeaderClass: {
+    type: String,
+    default: 'text-white font-weight-bold text-center',
+  },
+  actionHeaderStyle: {
+    type: String,
+    default: 'background-color: #004d4d; min-width: 120px',
   },
 })
 

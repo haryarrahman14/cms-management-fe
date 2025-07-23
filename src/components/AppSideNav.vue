@@ -61,6 +61,13 @@
         </v-list-item>
       </v-list-group>
       <v-list-item
+        to="/approvals"
+        prepend-icon="mdi-check-decagram"
+        router
+        title="Persetujuan"
+        value="persetujuan"
+      ></v-list-item>
+      <v-list-item
         @click="logout"
         prepend-icon="mdi-logout"
         title="Logout"

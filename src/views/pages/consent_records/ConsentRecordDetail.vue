@@ -167,6 +167,7 @@ import BaseButton from '@/components/BaseButton.vue'
 import BaseBreadcrumb from '@/components/BaseBreadcrumb.vue'
 import ConsentSubmissionService from '@/usecases/ConsentSubmissionService'
 import TemplatesService from '@/usecases/TemplatesService'
+import UsersService from '@/usecases/UsersService'
 
 const router = useRouter()
 const route = useRoute()
@@ -176,9 +177,16 @@ const recordId = computed(() => route.params.id)
 const { data: recordData } = ConsentSubmissionService.useGetConsentSubmissionDetail(recordId, {
   enabled: computed(() => !!recordId.value),
 })
-const { data: channelList } = ConsentSubmissionService.useGetConsentRecordChannelList({
-  select: (data) => data.map((item) => ({ label: item.name, value: item.id })),
+
+const { data: channelData } = UsersService.useGetUsers('CHANNEL')
+const channelList = computed(() => {
+  if (!channelData.value) return []
+  return channelData.value.map((channel) => ({
+    label: channel.name,
+    value: channel.username,
+  }))
 })
+
 const { data: templateDetail } = TemplatesService.useGetTemplateDetail(
   computed(() => recordData.value?.consentFormId),
   { enabled: computed(() => !!recordData.value?.consentFormId) },

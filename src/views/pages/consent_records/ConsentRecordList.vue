@@ -47,7 +47,7 @@
       <v-col cols="12" class="overflow-x-auto">
         <BaseTable
           :headers="tableHeaders"
-          :items="data"
+          :items="transformedData"
           :loading="isLoading"
           :show-detail="true"
           :show-edit="true"
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { reactive, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import BaseInput from '@/components/BaseInput.vue'
 import BaseInputSelect from '@/components/BaseInputSelect.vue'
@@ -69,18 +69,16 @@ import BaseTable from '@/components/BaseTable.vue'
 import BaseBreadcrumb from '@/components/BaseBreadcrumb.vue'
 import ConsentSubmissionService from '@/usecases/ConsentSubmissionService'
 import { ConsentRecordListTableHeaderStruct } from './structs/ConsentRecordListStruct'
-import Lazy from '@/plugins/Lazy'
 
 const router = useRouter()
 const route = useRoute()
-
 const filters = reactive({
   startDate: '',
   endDate: '',
   cif: '',
   status: '',
 })
-const appliedFilters = ref({
+const appliedFilters = reactive({
   startDate: '',
   endDate: '',
   cif: '',
@@ -89,8 +87,16 @@ const appliedFilters = ref({
 
 onMounted(() => {
   Object.assign(filters, route.query)
-  appliedFilters.value = { ...appliedFilters.value, ...route.query }
+  Object.assign(appliedFilters, route.query)
 })
+
+watch(
+  () => route.query,
+  (newQuery) => {
+    Object.assign(filters, newQuery)
+    Object.assign(appliedFilters, newQuery)
+  },
+)
 
 const headers = new ConsentRecordListTableHeaderStruct()
 const tableHeaders = Object.entries(headers).map(([key, label]) => ({
@@ -100,23 +106,26 @@ const tableHeaders = Object.entries(headers).map(([key, label]) => ({
 }))
 const { data: statusList } = ConsentSubmissionService.useGetConsentRecordStatusList()
 const { data, error, isLoading } = ConsentSubmissionService.useGetConsentSubmissions(
-  computed(() => appliedFilters.value),
+  appliedFilters,
   { enabled: computed(() => statusList.value.length > 0) },
-  async (data) =>
-    await Promise.all(
-      data.map(async (item) => {
-        const tableData = await Lazy.transform(item, new ConsentRecordListTableHeaderStruct())
-        return {
-          ...tableData,
-          id: item.id,
-          title: item.consentForm.title,
-          status: statusList.value.find((status) => status.id === item.status)?.name,
-        }
-      }),
-    ),
 )
+
+const transformedData = computed(() => {
+  if (!data.value || !statusList.value) return []
+  return data.value.map((item) => ({
+    id: item.id,
+    title: item.consentForm?.title || '',
+    status: statusList.value.find((status) => status.id === item.status)?.name || '',
+    submitDate: item.submitDate,
+    cif: item.cif,
+    userChannel: item.userChannel,
+    channel: item.channel,
+    version: item.version,
+  }))
+})
+
 const searchRecords = () => {
-  appliedFilters.value = { ...appliedFilters.value, ...filters }
+  Object.assign(appliedFilters, filters)
   router.replace({
     query: {
       ...route.query,

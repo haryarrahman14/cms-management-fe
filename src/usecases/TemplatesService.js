@@ -1,5 +1,6 @@
 import TemplateNetworkRepository from '@/repositories/network/TemplateNetworkRepository'
-import { useAppQuery, useAppMutation, createQueryKey } from '@/plugins/QueryPlugin'
+import { useQuery } from '@tanstack/vue-query'
+import { isRef } from 'vue'
 
 const TEMPLATE_QUERY_KEY = 'templates'
 const TEMPLATE_DETAIL_QUERY_KEY = 'template-detail'
@@ -28,25 +29,36 @@ const getTemplateDetail = async (id) => {
   return response
 }
 
-const useGetTemplates = (payload, options = {}) => {
-  return useAppQuery(createQueryKey(TEMPLATE_QUERY_KEY, payload), getTemplates, {
-    payload,
+const useGetTemplates = (payload, options = {}, formatter = (data) => data) => {
+  return useQuery({
+    queryKey: [TEMPLATE_QUERY_KEY, payload],
     initialData: [],
+    queryFn: async () => {
+      const response = await getTemplates(isRef(payload) ? payload.value : payload)
+      if (response.code !== 200) {
+        throw new Error(response.message)
+      }
+      return formatter(response.data)
+    },
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
     ...options,
   })
 }
 
-const useGetTemplateDetail = (id, options = {}) => {
-  return useAppQuery(createQueryKey(TEMPLATE_DETAIL_QUERY_KEY, id), getTemplateDetail, {
-    payload: id,
+const useGetTemplateDetail = (id, options = {}, formatter = (data) => data) => {
+  return useQuery({
     initialData: null,
-    ...options,
-  })
-}
-
-const useCreateTemplate = (options = {}) => {
-  return useAppMutation(createTemplate, {
-    invalidateQueries: [[TEMPLATE_QUERY_KEY]],
+    queryKey: [TEMPLATE_DETAIL_QUERY_KEY, id],
+    queryFn: async () => {
+      const response = await getTemplateDetail(isRef(id) ? id.value : id)
+      if (response.code !== 200) {
+        throw new Error(response.message)
+      }
+      return formatter(response.data)
+    },
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
     ...options,
   })
 }
@@ -58,5 +70,4 @@ export default {
 
   useGetTemplates,
   useGetTemplateDetail,
-  useCreateTemplate,
 }

@@ -159,7 +159,6 @@ import BaseButton from '@/components/BaseButton.vue'
 import BaseBreadcrumb from '@/components/BaseBreadcrumb.vue'
 import TemplatesService from '@/usecases/TemplatesService'
 import ConsentSubmissionService from '@/usecases/ConsentSubmissionService'
-import UsersService from '@/usecases/UsersService'
 import { useSnackbarStore } from '@/stores/useSnackbarStore'
 
 const router = useRouter()
@@ -185,14 +184,8 @@ const rules = {
   },
 }
 const { data: statusList } = ConsentSubmissionService.useGetConsentRecordStatusList()
-
-const { data: channelData } = UsersService.useGetUsers('CHANNEL')
-const channelList = computed(() => {
-  if (!channelData.value) return []
-  return channelData.value.map((channel) => ({
-    label: channel.name,
-    value: channel.username,
-  }))
+const { data: channelList } = ConsentSubmissionService.useGetConsentRecordChannelList({
+  select: (data) => data.map((item) => ({ label: item.name, value: item.id })),
 })
 const { data: consentTemplates, isLoading: templatesLoading } = TemplatesService.useGetTemplates({
   isGetAll: true,
@@ -237,9 +230,9 @@ const submitForm = async () => {
   if (!valid) return
   const payload = {
     consentFormId: form.consentFormId,
+    channel: form.channel,
     userChannel: form.userChannel,
     cif: form.cif,
-    channel: channelList.value.find((c) => c.value === form.channel)?.value,
     decisions: form.decisions.filter((d) => d.accepted !== null),
   }
   submitConsent(payload)

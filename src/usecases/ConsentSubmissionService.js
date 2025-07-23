@@ -1,4 +1,7 @@
-import Lazy from '@/plugins/Lazy'
+import { isRef, unref } from 'vue'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import ChannelList from '@/repositories/local/ChannelList'
+import ConsentRecordStatusList from '@/repositories/local/ConsentRecordStatusList'
 import ConsentSubmissionNetworkRepository from '@/repositories/network/ConsentSubmissionNetworkRepository'
 import {
   ConsentDecisionRequest,
@@ -16,15 +19,14 @@ import {
   SubmitConsentSubmissionResponse,
   UpdateConsentSubmissionResponse,
 } from '@/structs/networks/response/ConsentSubmissionsResponse'
+import Lazy from '@/plugins/Lazy'
 import Format from '@/plugins/Format.js'
-import { useAppQuery, useAppMutation, createQueryKey } from '@/plugins/QueryPlugin'
-import ConsentRecordStatusList from '@/repositories/local/ConsentRecordStatusList'
-import { unref } from 'vue'
 
 const CONSENT_SUBMISSION_QUERY_KEY = 'consent-submissions'
 const CONSENT_SUBMISSION_HISTORY_QUERY_KEY = 'consent-submission-history'
 const CONSENT_SUBMISSION_DETAIL_QUERY_KEY = 'consent-submission-detail'
 const CONSENT_RECORD_STATUS_LIST_QUERY_KEY = 'consent-record-status-list'
+const CONSENT_RECORD_CHANNEL_LIST_QUERY_KEY = 'consent-record-channel-list'
 
 const dateFormatter = (key, value) => {
   return key.toLowerCase().includes('date') ? Format.dateLabelFormat(value) : value
@@ -163,6 +165,7 @@ const updateConsentSubmission = async (consentId, payload) => {
     responseObj.decisions = await Promise.all(
       (response.data.decisions || []).map(async (decision) => {
         const d = await Lazy.transform(decision, new ConsentDecisionResponse())
+        // section
         if (d.consentSection) {
           d.consentSection = await Lazy.transform(d.consentSection, new ConsentSectionResponse())
         }
@@ -175,7 +178,6 @@ const updateConsentSubmission = async (consentId, payload) => {
   return response
 }
 
-// Utility: getSectionDepth
 const getSectionDepth = (section, sections) => {
   if (!section.parentSectionId || !sections) return 1
   let depth = 1
@@ -195,58 +197,136 @@ const useGetSectionDepth = (sectionsRef) => {
   }
 }
 
-const useGetConsentSubmissions = (payload, options = {}) => {
-  return useAppQuery(createQueryKey(CONSENT_SUBMISSION_QUERY_KEY, payload), getConsentSubmissions, {
-    payload,
+const useGetConsentSubmissions = (payload, options = {}, formatter = (data) => data) => {
+  return useQuery({
+    queryKey: [CONSENT_SUBMISSION_QUERY_KEY, payload],
     initialData: [],
-    ...options,
-  })
-}
-
-const useGetConsentSubmissionHistory = (consentId, options = {}) => {
-  return useAppQuery(
-    createQueryKey(CONSENT_SUBMISSION_HISTORY_QUERY_KEY, consentId),
-    getConsentSubmissionHistory,
-    {
-      payload: consentId,
-      initialData: [],
-      ...options,
+    queryFn: async () => {
+      const response = await getConsentSubmissions(isRef(payload) ? payload.value : payload)
+      if (response.code !== 200) {
+        throw new Error(response.message)
+      }
+      return formatter(response.data)
     },
-  )
-}
-
-const useGetConsentSubmissionDetail = (consentId, options = {}) => {
-  return useAppQuery(
-    createQueryKey(CONSENT_SUBMISSION_DETAIL_QUERY_KEY, consentId),
-    getConsentSubmissionDetail,
-    {
-      payload: consentId,
-      initialData: {},
-      ...options,
-    },
-  )
-}
-
-const useSubmitConsentSubmission = (options = {}) => {
-  return useAppMutation(submitConsentSubmission, {
-    invalidateQueries: [[CONSENT_SUBMISSION_QUERY_KEY]],
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
     ...options,
   })
 }
 
-const useUpdateConsentSubmission = (consentId, options = {}) => {
-  return useAppMutation((payload) => updateConsentSubmission(unref(consentId), payload), {
-    invalidateQueries: [
-      [CONSENT_SUBMISSION_DETAIL_QUERY_KEY, consentId],
-      [CONSENT_SUBMISSION_QUERY_KEY],
-    ],
-    ...options,
-  })
-}
-
-const useGetConsentRecordStatusList = (options = {}) => {
-  return useAppQuery([CONSENT_RECORD_STATUS_LIST_QUERY_KEY], () => ConsentRecordStatusList.get(), {
+const useGetConsentSubmissionHistory = (consentId, options = {}, formatter = (data) => data) => {
+  return useQuery({
+    queryKey: [CONSENT_SUBMISSION_HISTORY_QUERY_KEY, consentId],
     initialData: [],
+    queryFn: async () => {
+      const response = await getConsentSubmissionHistory(
+        isRef(consentId) ? consentId.value : consentId,
+      )
+      if (response.code !== 200) {
+        throw new Error(response.message)
+      }
+      return formatter(response.data)
+    },
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    ...options,
+  })
+}
+
+const useGetConsentSubmissionDetail = (consentId, options = {}, formatter = (data) => data) => {
+  return useQuery({
+    queryKey: [CONSENT_SUBMISSION_DETAIL_QUERY_KEY, consentId],
+    initialData: {},
+    queryFn: async () => {
+      const response = await getConsentSubmissionDetail(
+        isRef(consentId) ? consentId.value : consentId,
+      )
+      if (response.code !== 200) {
+        throw new Error(response.message)
+      }
+      return formatter(response.data)
+    },
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    ...options,
+  })
+}
+
+const useSubmitConsentSubmission = (options = {}, formatter = (data) => data) => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (payload) => {
+      const response = await submitConsentSubmission(isRef(payload) ? payload.value : payload)
+      if (response.code !== 200) {
+        throw new Error(response.message)
+      }
+      return formatter(response.data)
+    },
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [CONSENT_SUBMISSION_QUERY_KEY] })
+      options.onSuccess?.(data)
+    },
+    ...options,
+  })
+}
+
+const useUpdateConsentSubmission = (consentId, options = {}, formatter = (data) => data) => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (payload) => {
+      const response = await updateConsentSubmission(
+        isRef(consentId) ? consentId.value : consentId,
+        isRef(payload) ? payload.value : payload,
+      )
+      if (response.code !== 200) {
+        throw new Error(response.message)
+      }
+      return formatter(response.data)
+    },
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    onSuccess: (data) => {
+      // invalidate detail and list
+      queryClient.invalidateQueries({ queryKey: [CONSENT_SUBMISSION_DETAIL_QUERY_KEY, consentId] })
+      queryClient.invalidateQueries({ queryKey: [CONSENT_SUBMISSION_QUERY_KEY] })
+      options.onSuccess?.(data)
+    },
+    ...options,
+  })
+}
+
+const useGetConsentRecordStatusList = (options = {}, formatter = (data) => data) => {
+  return useQuery({
+    queryKey: [CONSENT_RECORD_STATUS_LIST_QUERY_KEY],
+    initialData: [],
+    queryFn: () => {
+      const response = ConsentRecordStatusList.get()
+      if (response.code !== 200) {
+        throw new Error(response.message)
+      }
+      return formatter(response.data)
+    },
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    ...options,
+  })
+}
+
+const useGetConsentRecordChannelList = (options = {}, formatter = (data) => data) => {
+  return useQuery({
+    queryKey: [CONSENT_RECORD_CHANNEL_LIST_QUERY_KEY],
+    initialData: [],
+    queryFn: () => {
+      const response = ChannelList.get()
+      if (response.code !== 200) {
+        throw new Error(response.message)
+      }
+      return formatter(response.data)
+    },
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
     ...options,
   })
 }
@@ -258,6 +338,7 @@ export default {
   useSubmitConsentSubmission,
   useUpdateConsentSubmission,
   useGetConsentRecordStatusList,
+  useGetConsentRecordChannelList,
 
   // Utility hooks
   useGetSectionDepth,

@@ -234,6 +234,18 @@ export class GetConsentSubmissionResponse {
   status = null
 
   /**
+   * Agent
+   * @type {String}
+   */
+  agent = ''
+
+  /**
+   * User agent
+   * @type {String}
+   */
+  userAgent = ''
+
+  /**
    * Type
    * @type {Number}
    */
@@ -330,6 +342,18 @@ export class GetConsentSubmissionDetailResponse {
    * @type {Number}
    */
   status = null
+
+  /**
+   * Agent
+   * @type {String}
+   */
+  agent = ''
+
+  /**
+   * User agent
+   * @type {String}
+   */
+  userAgent = ''
 
   /**
    * Type
@@ -468,6 +492,18 @@ export class SubmitConsentSubmissionResponse {
   status = null
 
   /**
+   * Agent
+   * @type {String}
+   */
+  agent = ''
+
+  /**
+   * User agent
+   * @type {String}
+   */
+  userAgent = ''
+
+  /**
    * Type
    * @type {Number}
    */
@@ -564,6 +600,18 @@ export class UpdateConsentSubmissionResponse {
    * @type {Number}
    */
   status = null
+
+  /**
+   * Agent
+   * @type {String}
+   */
+  agent = ''
+
+  /**
+   * User agent
+   * @type {String}
+   */
+  userAgent = ''
 
   /**
    * Type

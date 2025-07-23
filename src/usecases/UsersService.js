@@ -1,12 +1,15 @@
 import UserNetworkRepository from '@/repositories/network/UserNetworkRepository'
+import { useAppQuery, useAppMutation, createQueryKey } from '@/plugins/QueryPlugin'
+
+const USERS_QUERY_KEY = 'users'
 
 const createUser = (payload) => UserNetworkRepository.createUser(payload)
 
-const createAgent = (payload) => UserNetworkRepository.createAgent(payload)
+const createChannel = (payload) => UserNetworkRepository.createChannel(payload)
 
 /**
  *
- * @param {String} userType - either AGENT/USER
+ * @param {String} userType - either CHANNEL/USER
  * @returns
  */
 const getUsers = async (userType) => {
@@ -19,4 +22,34 @@ const getUsers = async (userType) => {
   return response
 }
 
-export default { createUser, createAgent, getUsers }
+const useGetUsers = (userType, options = {}) => {
+  return useAppQuery(createQueryKey(USERS_QUERY_KEY, userType), getUsers, {
+    payload: userType,
+    initialData: [],
+    ...options,
+  })
+}
+
+const useCreateUser = (options = {}) => {
+  return useAppMutation(createUser, {
+    invalidateQueries: [[USERS_QUERY_KEY]],
+    ...options,
+  })
+}
+
+const useCreateChannel = (options = {}) => {
+  return useAppMutation(createChannel, {
+    invalidateQueries: [[USERS_QUERY_KEY]],
+    ...options,
+  })
+}
+
+export default {
+  createUser,
+  createChannel,
+  getUsers,
+
+  useGetUsers,
+  useCreateUser,
+  useCreateChannel,
+}

@@ -24,15 +24,15 @@
 
     <v-row>
       <v-col cols="12">
-        <BaseTable :headers="tableHeaders" :items="templateItems" />
+        <BaseTable :headers="tableHeaders" :items="templateItems" :loading="isLoading" />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 import BaseInput from '@/components/BaseInput.vue'
 import BaseButton from '@/components/BaseButton.vue'
@@ -43,17 +43,28 @@ import { GetTemplateRequest } from '@/structs/networks/request/GetTemplateReques
 import Format from '@/plugins/Format'
 
 const router = useRouter()
+const route = useRoute()
 
-const searchForm = ref(new GetTemplateRequest())
+const searchForm = reactive(new GetTemplateRequest())
+const appliedFilters = reactive(new GetTemplateRequest())
 
 onMounted(() => {
-  searchTemplate()
+  Object.assign(searchForm, route.query)
+  Object.assign(appliedFilters, route.query)
 })
 
 watch(
-  () => searchForm.value.templateName,
+  () => route.query,
+  (newQuery) => {
+    Object.assign(searchForm, newQuery)
+    Object.assign(appliedFilters, newQuery)
+  },
+)
+
+watch(
+  () => searchForm.templateName,
   (val) => {
-    searchForm.value.isGetAll = !val
+    searchForm.isGetAll = !val
   },
 )
 
@@ -65,31 +76,38 @@ const tableHeaders = [
   { text: 'Dibuat oleh', value: 'createdBy' },
 ]
 
-const templateItems = ref([])
+const { data: templates, isLoading } = TemplatesService.useGetTemplates(
+  computed(() => appliedFilters),
+  {
+    enabled: computed(() => true),
+  },
+)
+
+const templateItems = computed(() => {
+  if (!templates.value) return []
+
+  return templates.value.map((item) => ({
+    ...item,
+    createdDate: Format.dateLong(item.createdDate || item.createdAt),
+  }))
+})
 
 const showPopup = ref(false)
 
-const form = ref({
-  name: '',
-  type: '',
-  isRequired: false,
-})
-
 const submitForm = () => {
-  console.log('Form submitted:', form.value)
   showPopup.value = false
   router.push({
     name: 'TemplateDetail',
   })
 }
 
-const searchTemplate = async () => {
-  const response = await TemplatesService.getTemplates(searchForm.value)
-  if (response.code === 200) {
-    templateItems.value = response.data.map((item) => ({
-      ...item,
-      createdDate: Format.dateLong(item.createdDate || item.createdAt),
-    }))
-  }
+const searchTemplate = () => {
+  Object.assign(appliedFilters, searchForm)
+  router.replace({
+    query: {
+      ...route.query,
+      ...searchForm,
+    },
+  })
 }
 </script>

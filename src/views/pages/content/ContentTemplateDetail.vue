@@ -60,7 +60,7 @@
 
         <v-row class="mb-4">
           <v-col cols="12" class="d-flex justify-end">
-            <BaseButton @click="submitForm">Submit</BaseButton>
+            <BaseButton :loading="isSubmitting" @click="submitForm">Submit</BaseButton>
             <BaseButton class="ml-2" color="primary" @click="cancelForm">Cancel</BaseButton>
           </v-col>
         </v-row>
@@ -70,7 +70,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 import BaseInput from '@/components/BaseInput.vue'
@@ -90,47 +90,50 @@ const snackbar = useSnackbarStore()
 
 const generateUUID = () => Math.random().toString(36).substring(2, 9) + Date.now().toString(36)
 
-const isLoading = ref(false)
-const form = ref(new CreateTemplateRequest())
+const form = reactive(new CreateTemplateRequest())
+
+const { mutate: createTemplate, isPending: isCreating } = TemplatesService.useCreateTemplate({
+  onSuccess: () => {
+    snackbar.open('Template berhasil dibuat')
+    Object.assign(form, new CreateTemplateRequest())
+    router.push({ name: 'consent' })
+  },
+  onError: (error) => {
+    snackbar.open(`Error: ${error.message}`, { color: 'error' })
+  },
+})
+
+const isSubmitting = computed(() => isCreating.value)
 
 const addClause = () => {
-  form.value.clauses.push({
+  form.clauses.push({
     id: generateUUID(),
     ...new CreateTemplateClause(),
   })
 }
 
 const removeClause = (index) => {
-  form.value.clauses.splice(index, 1)
+  form.clauses.splice(index, 1)
 }
 
 const moveUp = (index) => {
   if (index > 0) {
-    const temp = form.value.clauses[index - 1]
-    form.value.clauses[index - 1] = form.value.clauses[index]
-    form.value.clauses[index] = temp
+    const temp = form.clauses[index - 1]
+    form.clauses[index - 1] = form.clauses[index]
+    form.clauses[index] = temp
   }
 }
 
 const moveDown = (index) => {
-  if (index < form.value.clauses.length - 1) {
-    const temp = form.value.clauses[index + 1]
-    form.value.clauses[index + 1] = form.value.clauses[index]
-    form.value.clauses[index] = temp
+  if (index < form.clauses.length - 1) {
+    const temp = form.clauses[index + 1]
+    form.clauses[index + 1] = form.clauses[index]
+    form.clauses[index] = temp
   }
 }
 
-const submitForm = async () => {
-  isLoading.value = true
-  const response = await TemplatesService.createTemplate(form.value)
-  isLoading.value = false
-  if (response.code === 200) {
-    snackbar.open('Template berhasil dibuat')
-    form.value = new CreateTemplateRequest()
-    router.push({ name: 'consent' })
-  } else {
-    snackbar.open(`Error: ${response.message}`, { color: 'error' })
-  }
+const submitForm = () => {
+  createTemplate(form)
 }
 
 const cancelForm = () => {

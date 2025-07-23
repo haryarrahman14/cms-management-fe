@@ -65,6 +65,13 @@ const dateDefault = (date) => {
   return dayjs(date, 'DD/MM/YYYY').format('YYYY-MM-DD')
 }
 
+const dateLabelFormat = (date) => {
+  if (!dayjs(date).isValid()) {
+    return date
+  }
+  return dayjs(date).format('DD/MM/YYYY')
+}
+
 const Format = {
   money,
   // number,
@@ -73,6 +80,7 @@ const Format = {
   percentage,
   reportNameDateFormat,
   dateDefault,
+  dateLabelFormat,
 }
 
 export default Format

@@ -4,10 +4,12 @@
     :items="items"
     :model-value="modelValue"
     @update:modelValue="$emit('update:modelValue', $event)"
-    item-title="itemTitle"
-    item-value="itemValue"
+    :item-title="itemTitle"
+    :item-value="itemValue"
     variant="outlined"
     density="comfortable"
+    :disabled="disabled"
+    :readonly="readonly"
   />
 </template>
 
@@ -22,6 +24,10 @@ defineProps({
   itemValue: {
     type: String,
     default: 'value',
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 })
 </script>

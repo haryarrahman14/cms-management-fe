@@ -21,7 +21,7 @@
         </v-row>
         <v-row class="mb-4">
           <v-col cols="12" class="d-flex justify-end">
-            <BaseButton :loading="isLoading" @click="createRole">Submit</BaseButton>
+            <BaseButton :loading="isSubmitting" @click="submitRole">Submit</BaseButton>
             <BaseButton class="ml-2" color="primary" @click="cancelForm">Cancel</BaseButton>
           </v-col>
         </v-row>
@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { reactive, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseBreadCrumb from '@/components/BaseBreadcrumb.vue'
 import BaseInput from '@/components/BaseInput.vue'
@@ -45,33 +45,54 @@ const router = useRouter()
 const snackbar = useSnackbarStore()
 
 const isEdit = computed(() => route.name === 'AdminRolesEdit')
-const isLoading = ref(false)
-const form = ref(new CreateRoleRequest())
+const form = reactive(new CreateRoleRequest())
 
-const createRole = async () => {
-  isLoading.value = true
-  const response = isEdit.value
-    ? await RolesService.updateRoles(route.params.id, form.value)
-    : await RolesService.createRoles(form.value)
+const { mutate: createRole, isPending: isCreating } = RolesService.useCreateRole({
+  onSuccess: () => {
+    snackbar.open('Role berhasil dibuat')
+    Object.assign(form, new CreateRoleRequest())
+  },
+  onError: (error) => {
+    snackbar.open(`Error: ${error.message}`, { color: 'error' })
+  },
+})
 
-  isLoading.value = false
-  if (response.code === 200) {
-    snackbar.open(isEdit.value ? 'Role berhasil diubah' : 'Role berhasil dibuat')
-    if (!isEdit.value) form.value = new CreateRoleRequest()
+const { mutate: updateRole, isPending: isUpdating } = RolesService.useUpdateRole(
+  computed(() => route.params.id),
+  {
+    onSuccess: () => {
+      snackbar.open('Role berhasil diubah')
+    },
+    onError: (error) => {
+      snackbar.open(`Error: ${error.message}`, { color: 'error' })
+    },
+  },
+)
+
+const { data: roleData } = RolesService.useGetRoleById(
+  computed(() => route.params.id),
+  {
+    enabled: computed(() => isEdit.value && !!route.params.id),
+  },
+)
+
+watch(
+  () => roleData.value,
+  (role) => {
+    if (role && isEdit.value) {
+      form.roleName = role.roleName || ''
+      form.createdBy = role.createdBy || ''
+    }
+  },
+)
+
+const isSubmitting = computed(() => isCreating.value || isUpdating.value)
+
+const submitRole = () => {
+  if (isEdit.value) {
+    updateRole(form)
   } else {
-    snackbar.open(`Error: ${response.message}`, { color: 'error' })
-  }
-}
-
-const getRoleById = async (id) => {
-  isLoading.value = true
-  const response = await RolesService.getRoleById(id)
-  isLoading.value = false
-  if (response.code === 200 && response.data) {
-    form.value.roleName = response.data.roleName || ''
-    form.value.createdBy = response.data.createdBy || ''
-  } else {
-    snackbar.open(`Gagal mengambil data role`, { color: 'error' })
+    createRole(form)
   }
 }
 
@@ -80,11 +101,4 @@ const cancelForm = () => {
     name: 'AdminRoles',
   })
 }
-
-onMounted(() => {
-  if (isEdit.value && route.params.id) {
-    const id = route.params.id
-    getRoleById(id)
-  }
-})
 </script>

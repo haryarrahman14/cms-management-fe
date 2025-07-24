@@ -12,6 +12,8 @@ import AdminUsers from '@/views/pages/admin/AdminUsers.vue'
 import AdminChannels from '@/views/pages/admin/AdminChannels.vue'
 import AdminUsersCreate from '@/views/pages/admin/AdminUsersCreate.vue'
 import AdminChannelsCreate from '@/views/pages/admin/AdminChannelsCreate.vue'
+import Approval from '@/views/pages/approvals/Approval.vue'
+import ApprovalDetail from '@/views/pages/approvals/ApprovalDetail.vue'
 
 const routes = [
   {
@@ -83,6 +85,19 @@ const routes = [
     path: '/admin/users/create-channel',
     name: 'AdminChannelsCreate',
     component: AdminChannelsCreate,
+  },
+  /**
+   * Approval Routes
+   */
+  {
+    path: '/approvals',
+    name: 'Approval',
+    component: Approval,
+  },
+  {
+    path: '/approvals/detail/:id',
+    name: 'ApprovalDetail',
+    component: ApprovalDetail,
   },
 ]
 

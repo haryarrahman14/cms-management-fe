@@ -20,6 +20,9 @@
             <BaseInput v-model="form.name" label="Nama Lengkap" />
           </v-col>
           <v-col cols="12">
+            <BaseInput type="email" v-model="form.email" label="Email" />
+          </v-col>
+          <v-col cols="12">
             <base-select
               v-model="form.role"
               :items="roles"
@@ -27,6 +30,9 @@
               item-value="roleId"
               label="Role"
             />
+          </v-col>
+          <v-col cols="12">
+            <BaseInput type="date" v-model="form.effectiveDate" label="Tanggal Efektif" />
           </v-col>
         </v-row>
         <v-row class="mb-4">

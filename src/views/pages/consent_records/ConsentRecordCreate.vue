@@ -47,7 +47,7 @@
               />
             </v-col>
             <v-col cols="12">
-              <BaseInput v-model="form.version" label="Version" readonly />
+              <BaseInput v-model="form.version" label="Version" disabled />
             </v-col>
             <v-col cols="12">
               <BaseInputSelect
@@ -161,6 +161,7 @@ import TemplatesService from '@/usecases/TemplatesService'
 import ConsentSubmissionService from '@/usecases/ConsentSubmissionService'
 import UsersService from '@/usecases/UsersService'
 import { useSnackbarStore } from '@/stores/useSnackbarStore'
+import { getCurrentDate } from '@/plugins/DateUtil'
 
 const router = useRouter()
 const route = useRoute()
@@ -168,7 +169,7 @@ const formRef = ref(null)
 const formValid = ref(false)
 const snackbar = useSnackbarStore()
 const form = reactive({
-  submitDate: null,
+  submitDate: getCurrentDate(),
   cif: null,
   userChannel: null,
   consentFormId: null,

@@ -9,6 +9,14 @@ class CreateUserRequest {
    */
   name = ''
   /**
+   * @type {String}
+   */
+  email = ''
+  /**
+   * @type {String}
+   */
+  effectiveDate = null
+  /**
    * @type {Number}
    */
   role = null

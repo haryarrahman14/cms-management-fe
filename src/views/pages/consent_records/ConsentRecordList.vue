@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { reactive, computed, onMounted, watch } from 'vue'
+import { reactive, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import BaseInput from '@/components/BaseInput.vue'
 import BaseInputSelect from '@/components/BaseInputSelect.vue'
@@ -69,34 +69,22 @@ import BaseTable from '@/components/BaseTable.vue'
 import BaseBreadcrumb from '@/components/BaseBreadcrumb.vue'
 import ConsentSubmissionService from '@/usecases/ConsentSubmissionService'
 import { ConsentRecordListTableHeaderStruct } from './structs/ConsentRecordListStruct'
+import { getCurrentDate } from '@/plugins/DateUtil'
 
 const router = useRouter()
 const route = useRoute()
 const filters = reactive({
-  startDate: '',
-  endDate: '',
+  startDate: getCurrentDate(),
+  endDate: getCurrentDate(),
   cif: '',
   status: '',
 })
 const appliedFilters = reactive({
-  startDate: '',
-  endDate: '',
+  startDate: getCurrentDate(),
+  endDate: getCurrentDate(),
   cif: '',
   status: '',
 })
-
-onMounted(() => {
-  Object.assign(filters, route.query)
-  Object.assign(appliedFilters, route.query)
-})
-
-watch(
-  () => route.query,
-  (newQuery) => {
-    Object.assign(filters, newQuery)
-    Object.assign(appliedFilters, newQuery)
-  },
-)
 
 const headers = new ConsentRecordListTableHeaderStruct()
 const tableHeaders = Object.entries(headers).map(([key, label]) => ({
@@ -124,8 +112,21 @@ const transformedData = computed(() => {
   }))
 })
 
+watch(
+  () => [statusList.value, route.query],
+  ([newStatusList, newQuery]) => {
+    if (newStatusList.length === 0) return // wait for status list to be loaded before applying filters from router query
+    const routerStatus = newQuery.status
+    const newFilters = {
+      ...newQuery,
+      status: newStatusList.find((status) => status.id.toString() === routerStatus)?.id ?? '',
+    }
+    Object.assign(filters, newFilters)
+    Object.assign(appliedFilters, newFilters)
+  },
+)
+
 const searchRecords = () => {
-  Object.assign(appliedFilters, filters)
   router.replace({
     query: {
       ...route.query,

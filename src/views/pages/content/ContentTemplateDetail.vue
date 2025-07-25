@@ -84,6 +84,7 @@ import {
 } from '@/structs/networks/request/CreateTemplateRequest'
 import TemplatesService from '@/usecases/TemplatesService'
 import { useSnackbarStore } from '@/stores/useSnackbarStore'
+import Constants from '@/plugins/Constants'
 
 const router = useRouter()
 const snackbar = useSnackbarStore()
@@ -133,6 +134,11 @@ const moveDown = (index) => {
 }
 
 const submitForm = () => {
+  if (form.clauses.length === 0) {
+    snackbar.open(Constants.REQUIRED_TEMPLATE_CLAUSES_MESSAGE, { color: 'error' })
+    return
+  }
+
   createTemplate(form)
 }
 

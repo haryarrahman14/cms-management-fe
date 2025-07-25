@@ -54,7 +54,7 @@
               />
             </v-col>
             <v-col cols="12">
-              <BaseInput v-model="form.version" label="Version" readonly disabled />
+              <BaseInput v-model="form.version" label="Version" disabled />
             </v-col>
             <v-col cols="12">
               <BaseInputSelect
@@ -257,6 +257,7 @@ watch(
   ([newTemplate, newRecord]) => {
     if (newTemplate && newRecord) {
       // Initialize decisions based on template sections and existing record decisions
+      form.version = newRecord.version?.toString()
       form.decisions = newTemplate.sections.map((section) => {
         const existingDecision = newRecord.decisions?.find(
           (d) => d.consentSectionId === section.consentSectionId,

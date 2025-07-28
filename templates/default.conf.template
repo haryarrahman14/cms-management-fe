@@ -141,6 +141,10 @@ server {
         proxy_set_header         Host ${DOLLAR}host;
         proxy_redirect           off;
 
+        location /api/cms-management {
+            proxy_pass "http://API_CONSENT_MANAGEMENT/";
+        }
+
     }
 }
 
@@ -148,4 +152,10 @@ upstream sso {
     keepalive 32;
 
     server ${SSO_HOSTNAME_PORT} max_fails=1 ${SSO_UPSTREAM_OPTS};
+}
+
+upstream API_CONSENT_MANAGEMENT {
+    keepalive 48;
+
+    server cms-management-be.cms-${API_STAGE}.svc:8080 max_fails=1 ${UPSTREAM_OPTS};
 }

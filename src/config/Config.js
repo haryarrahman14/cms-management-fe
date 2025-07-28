@@ -16,7 +16,7 @@ export const loadConfig = async () => {
       redirectUri: configResp.keycloakRedirectUri,
     },
     api: {
-      cmsBackend: configResp.cmsBackendApi,
+      cmsBackend: '/api/cms-management',
     },
   }
   return config

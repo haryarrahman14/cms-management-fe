@@ -14,7 +14,8 @@ RUN npm run build
 FROM nginx:stable-alpine AS production-stage
 
 COPY --from=build-stage /app/dist/ /usr/share/nginx/html
-COPY default.conf  /etc/nginx/conf.d/default.conf
+COPY templates/ /etc/nginx/templates/
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY env_init.sh /docker-entrypoint.d/90-env-init.sh
 
 RUN chmod 777 /usr/share/nginx/html/config.json

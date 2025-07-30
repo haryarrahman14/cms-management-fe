@@ -11,7 +11,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build
 
-FROM openresty/openresty:alpine AS production-stage
+FROM nginx:stable-alpine AS production-stage
 
 COPY --from=build-stage /app/dist/ /usr/share/nginx/html
 COPY templates/ /etc/nginx/templates/

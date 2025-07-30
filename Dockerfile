@@ -11,7 +11,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build
 
-FROM nginx:stable-alpine AS production-stage
+FROM btpns/nginx:1.22.0-btpns-f5e8e418 as production-stage
 
 COPY --from=build-stage /app/dist/ /usr/share/nginx/html
 COPY templates/ /etc/nginx/templates/

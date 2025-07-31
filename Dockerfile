@@ -20,21 +20,13 @@ COPY templates/ /etc/nginx/templates/
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY env_init.sh /docker-entrypoint.d/90-env-init.sh
 
-RUN chmod 777 /usr/share/nginx/html/config.json
-RUN chmod 777 -R /var/cache/nginx 
-RUN chmod -R 777 /etc/nginx/conf.d
-RUN chmod -R 777 /var/run 
-
-RUN mkdir -p /var/log/nginx && \
-    chown -R nginx:nginx /var/log/nginx && \
-    chmod -R 755 /var/log/nginx
-
-RUN chmod +x /docker-entrypoint.d/90-env-init.sh && \
+RUN chown -R nginx.nginx /etc/nginx && \
+    chown -R nginx.nginx /var/log/nginx && \
+	chmod -R 777 /var/log/nginx && \
+	chmod -R 777 /etc/nginx/conf.d && \
+	chown -R nginx.nginx /docker-entrypoint.d/90-env-init.sh && \
+	chmod +x /docker-entrypoint.d/90-env-init.sh && \
 	ls -lh /var/log/nginx
- 
+
 EXPOSE 5173
 USER nginx
-
-# EXPOSE 5173
-
-# CMD ["nginx", "-g", "daemon off;"]

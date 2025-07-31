@@ -25,6 +25,10 @@ RUN chmod 777 -R /var/cache/nginx
 RUN chmod -R 777 /etc/nginx/conf.d
 RUN chmod -R 777 /var/run 
 
+RUN mkdir -p /var/log/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    chmod -R 755 /var/log/nginx
+
 RUN chmod +x /docker-entrypoint.d/90-env-init.sh && \
 	ls -lh /var/log/nginx
  

@@ -13,6 +13,8 @@ RUN npm run build
 
 FROM btpns/nginx:1.22.0-btpns-latest AS production-stage
 
+USER root
+
 COPY --from=build-stage /app/dist/ /usr/share/nginx/html
 COPY templates/ /etc/nginx/templates/
 COPY nginx.conf /etc/nginx/nginx.conf

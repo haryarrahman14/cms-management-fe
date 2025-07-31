@@ -19,7 +19,7 @@ loadConfig().then((config) => {
     redirectUri: config.keycloak.redirectUri,
   }
 
-  window.keycloak = Keycloak(initOptions)
+  window.keycloak = new Keycloak(initOptions)
 
   // const keycloak = new Keycloak({
   //   url: config.keycloak.host,

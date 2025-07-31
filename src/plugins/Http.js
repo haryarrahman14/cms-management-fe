@@ -7,6 +7,7 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${window?.keycloak?.idT
 const TIMEOUT = 300000
 
 const get = async (url, payload, customConfig = {}) => {
+  console.log(axios.defaults.headers.common['Authorization'])
   const queryParams = queryString.stringify(payload || {})
   const urlWithQueries = queryParams ? `${url}?${queryParams}` : url
   try {

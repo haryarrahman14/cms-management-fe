@@ -12,19 +12,35 @@ import { loadConfig } from '@/config/Config'
 import Keycloak from 'keycloak-js'
 
 loadConfig().then((config) => {
-  const keycloak = new Keycloak({
+  const initOptions = {
     url: config.keycloak.host,
     realm: config.keycloak.realm,
     clientId: config.keycloak.clientId,
     redirectUri: config.keycloak.redirectUri,
-  })
-  keycloak.init({ onLoad: 'login-required' }).then((authenticated) => {
+  }
+
+  window.keycloak = Keycloak(initOptions)
+
+  // const keycloak = new Keycloak({
+  //   url: config.keycloak.host,
+  //   realm: config.keycloak.realm,
+  //   clientId: config.keycloak.clientId,
+  //   redirectUri: config.keycloak.redirectUri,
+  // })
+  window.keycloak.init({ onLoad: 'login-required' }).then((authenticated) => {
     if (!authenticated) {
       console.warn('not authenticated')
       window.location.reload()
     }
+
+    const { idToken } = window.keycloak
+
+    axios.defaults.headers.common['Authorization'] = `Bearer ${idToken}`
+    console.log('Keycloak initialized with token:', idToken)
+    console.log('Keycloak token:', axios.defaults.headers.common['Authorization'])
+
     setInterval(() => {
-      keycloak
+      window.keycloak
         .updateToken(70)
         .then((refreshed) => {
           if (refreshed) {
@@ -47,7 +63,7 @@ loadConfig().then((config) => {
   app.use(pinia)
   app.use(router)
   app.use(vuetify)
-  app.provide('keycloak', keycloak)
+  app.provide('keycloak', window.keycloak)
   app.use(VueApexCharts)
   app.mount('#app')
 })

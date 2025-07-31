@@ -22,6 +22,14 @@ objects:
         labels:
           app: ${APP_NAME}
       spec:
+        volumes:
+          - name: jwks-sso
+            secret:
+              secretName: jwks-sso
+              defaultMode: 420
+              items:
+                - key: jwks-${STAGE}.json
+                  path: jwks-${STAGE}.json
         containers:
           - name: ${APP_NAME}
             selector: worker=true
@@ -35,8 +43,13 @@ objects:
                 cpu: ${{LIMIT_CPU}}
                 memory: ${{LIMIT_MEMORY}}
               requests:
-                cpu: 100m
-                memory: 64M
+                cpu: 10m
+                memory: 10M
+            volumeMounts:
+                - name: jwks-sso
+                  readOnly: true
+                  mountPath: /tmp/jwks-sso.json
+                  subPath: jwks-${STAGE}.json
             envFrom:
               - configMapRef:
                   name: ${APP_NAME}-env

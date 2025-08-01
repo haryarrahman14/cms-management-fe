@@ -10,35 +10,34 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'quill/dist/quill.snow.css'
 import { loadConfig } from '@/config/Config'
 import Keycloak from 'keycloak-js'
-import axios from 'axios'
+// import axios from 'axios'
 
 loadConfig().then((config) => {
-  const initOptions = {
-    url: config.keycloak.host,
-    realm: config.keycloak.realm,
-    clientId: config.keycloak.clientId,
-    redirectUri: config.keycloak.redirectUri,
-  }
-
-  window.keycloak = new Keycloak(initOptions)
-
-  // const keycloak = new Keycloak({
+  // const initOptions = {
   //   url: config.keycloak.host,
   //   realm: config.keycloak.realm,
   //   clientId: config.keycloak.clientId,
   //   redirectUri: config.keycloak.redirectUri,
-  // })
-  window.keycloak.init({ onLoad: 'login-required' }).then((authenticated) => {
+  // }
+
+  // window.keycloak = new Keycloak(initOptions)
+
+  const keycloak = new Keycloak({
+    url: config.keycloak.host,
+    realm: config.keycloak.realm,
+    clientId: config.keycloak.clientId,
+    redirectUri: config.keycloak.redirectUri,
+  })
+
+  keycloak.init({ onLoad: 'login-required' }).then((authenticated) => {
     if (!authenticated) {
       console.warn('not authenticated')
       return window.location.reload()
     }
 
-    const { idToken } = window.keycloak
+    // const { idToken } = window.keycloak
 
-    axios.defaults.headers.common['Authorization'] = `Bearer ${idToken}`
-    console.log('Keycloak initialized with token:', idToken)
-    console.log('Keycloak token:', axios.defaults.headers.common['Authorization'])
+    // axios.defaults.headers.common['Authorization'] = `Bearer ${idToken}`
 
     setInterval(() => {
       window.keycloak
@@ -64,7 +63,7 @@ loadConfig().then((config) => {
   app.use(pinia)
   app.use(router)
   app.use(vuetify)
-  app.provide('keycloak', window.keycloak)
+  app.provide('keycloak', keycloak)
   app.use(VueApexCharts)
   app.mount('#app')
 })

@@ -10,6 +10,7 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'quill/dist/quill.snow.css'
 import { loadConfig } from '@/config/Config'
 import Keycloak from 'keycloak-js'
+import axios from 'axios'
 
 loadConfig().then((config) => {
   const initOptions = {
@@ -30,7 +31,7 @@ loadConfig().then((config) => {
   window.keycloak.init({ onLoad: 'login-required' }).then((authenticated) => {
     if (!authenticated) {
       console.warn('not authenticated')
-      window.location.reload()
+      return window.location.reload()
     }
 
     const { idToken } = window.keycloak

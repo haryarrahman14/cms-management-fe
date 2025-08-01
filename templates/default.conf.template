@@ -142,7 +142,7 @@ server {
         proxy_redirect           off;
 
         location /api/cms-management {
-            rewrite  ^/api/cms-management/(.*) /$1 break;
+            rewrite  ^/api/cms-management/(.*) $1 break;
             proxy_pass "http://API_CONSENT_MANAGEMENT/";
         }
 
